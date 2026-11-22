@@ -1,0 +1,14 @@
+
+:{$PORT:80} {
+    root * /app
+
+    encode zstd gzip
+
+    @blocked path /config/* /database/* /includes/* /.git/* /.env /README.md /DOKUMENTASI.md
+    respond @blocked 404
+
+    @blockedUploadPhp path /uploads/*.php /uploads/*/*.php
+    respond @blockedUploadPhp 404
+
+    php_server
+}
