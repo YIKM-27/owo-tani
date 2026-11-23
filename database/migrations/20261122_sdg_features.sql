@@ -1,5 +1,3 @@
-USE owo_tani;
-
 ALTER TABLE farm_logs
     MODIFY activity ENUM('Penyiraman', 'Pemupukan', 'Penanganan cuaca ekstrem', 'Pengomposan') NOT NULL;
 

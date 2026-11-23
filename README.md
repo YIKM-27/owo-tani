@@ -11,9 +11,10 @@ OwO Tani adalah aplikasi berbasis web pertanian untuk mengelola lahan, menjelaja
 1. Jalankan Apache dan MySQL dari Laragon.
 2. Buat database MySQL `owo_tani`, lalu impor [`database/schema.sql`](./database/schema.sql) lewat HeidiSQL atau phpMyAdmin. Jangan ketik SQL langsung di Command Prompt.
 3. Untuk database lama, jalankan migrasi secara berurutan: [`20261116_media_and_bmkg_locations.sql`](./database/migrations/20261116_media_and_bmkg_locations.sql), lalu [`20261122_sdg_features.sql`](./database/migrations/20261122_sdg_features.sql). Lewati migrasi yang kolomnya sudah ada; instalasi baru dari schema terbaru tidak memerlukan migrasi.
-4. Dari terminal pada folder proyek, jalankan:
+4. Dari PowerShell pada folder proyek, atur nama database lokal lalu jalankan:
 
    ```text
+   $env:DB_NAME='owo_tani'
    php database/seed.php
    php -S 127.0.0.1:8000 -t .
    ```
@@ -74,7 +75,7 @@ Akun kedua untuk setiap peran juga tersedia; daftar lengkapnya ada di [DOKUMENTA
 
 ## Bantuan cepat
 
-- **Database tidak ditemukan:** pastikan `owo_tani` sudah dibuat dan [`database/schema.sql`](./database/schema.sql) berhasil diimpor.
+- **Database tidak ditemukan:** untuk Laragon, pastikan `owo_tani` sudah dibuat, `DB_NAME` diatur ke `owo_tani`, dan [`database/schema.sql`](./database/schema.sql) berhasil diimpor. Hosting memakai `main` secara bawaan; atur `DB_NAME` jika nama databasenya berbeda.
 - **Kolom database tidak ditemukan:** jika memakai database lama, jalankan migrasi satu kali seperti dijelaskan di atas.
 - **Foto tidak bisa diunggah:** aktifkan ekstensi GD PHP dan pastikan `uploads/` memiliki izin tulis.
 - **Halaman cuaca tidak menampilkan BMKG:** periksa koneksi internet dan cURL PHP. Aplikasi dapat beralih ke Open-Meteo jika tersedia.

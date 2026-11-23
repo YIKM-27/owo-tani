@@ -9,28 +9,33 @@ $error = '';
 $email = $_COOKIE['owo_tani_email'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
-    $email = trim((string) ($_POST['email'] ?? ''));
+    $email = strtolower(trim((string) ($_POST['email'] ?? '')));
     $password = (string) ($_POST['password'] ?? '');
-    $statement = db()->prepare('SELECT id, name, email, password_hash, role, avatar_path FROM users WHERE email = ? LIMIT 1');
-    $statement->execute([$email]);
-    $account = $statement->fetch();
-    if ($account && password_verify($password, $account['password_hash'])) {
-        session_regenerate_id(true);
-        unset($account['password_hash']);
-        $_SESSION['user'] = $account;
-        if (isset($_POST['remember_email'])) {
-            setcookie('owo_tani_email', $email, [
-                'expires' => time() + 60 * 60 * 24 * 30,
-                'httponly' => true,
-                'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
-                'samesite' => 'Lax',
-            ]);
-        } else {
-            setcookie('owo_tani_email', '', time() - 3600, '/');
+    try {
+        $statement = db()->prepare('SELECT id, name, email, password_hash, role, avatar_path FROM users WHERE email = ? LIMIT 1');
+        $statement->execute([$email]);
+        $account = $statement->fetch();
+        if ($account && password_verify($password, $account['password_hash'])) {
+            session_regenerate_id(true);
+            unset($account['password_hash']);
+            $_SESSION['user'] = $account;
+            if (isset($_POST['remember_email'])) {
+                setcookie('owo_tani_email', $email, [
+                    'expires' => time() + 60 * 60 * 24 * 30,
+                    'httponly' => true,
+                    'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                    'samesite' => 'Lax',
+                ]);
+            } else {
+                setcookie('owo_tani_email', '', time() - 3600, '/');
+            }
+            redirect('dashboard.php');
         }
-        redirect('dashboard.php');
+        $error = 'Email atau kata sandi belum sesuai. Periksa kembali, ya.';
+    } catch (PDOException) {
+        error_log('OwO Tani login database error');
+        $error = 'Layanan database belum dapat dihubungi. Silakan coba beberapa saat lagi.';
     }
-    $error = 'Email atau kata sandi belum sesuai. Periksa kembali, ya.';
 }
 
 $pageTitle = 'Masuk';

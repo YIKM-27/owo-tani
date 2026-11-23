@@ -18,13 +18,13 @@ OwO Tani dibuat dengan PHP native, MySQL/MariaDB, HTML, CSS, dan JavaScript tanp
 ### Database baru
 
 1. Jalankan Apache dan MySQL di Laragon.
-2. Buat database `owo_tani` dengan karakter set `utf8mb4` dan collation `utf8mb4_unicode_ci`. Alternatifnya, jalankan [`database/schema.sql`](./database/schema.sql) di HeidiSQL atau phpMyAdmin; berkas tersebut juga membuat database.
+2. Pilih database yang akan dipakai (hosting kamu memakai `main`) lalu impor [`database/schema.sql`](./database/schema.sql) ke database tersebut. File schema membuat tabel di database yang sedang dipilih.
 3. Pengaturan koneksi bawaan di [`config/database.php`](./config/database.php):
    - Host: `127.0.0.1`
-   - Database: `owo_tani`
+   - Database bawaan: `main`
    - Pengguna: `root`
    - Kata sandi: kosong
-4. Jika pengaturan MySQL berbeda, atur environment variable `DB_HOST`, `DB_NAME`, `DB_USER`, dan `DB_PASS`.
+4. Aplikasi memakai database `main` secara bawaan. Atur environment variable `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, dan `DB_PASS` sesuai kredensial hosting.
 5. Di terminal pada folder proyek, jalankan:
 
    ```text
@@ -203,7 +203,7 @@ Koordinat lahan dikirim ke layanan geocoding/cuaca tersebut saat pengguna membuk
 
 | Gejala | Pemeriksaan |
 |---|---|
-| `Unknown database 'owo_tani'` | Buat database dan impor `database/schema.sql` melalui HeidiSQL/phpMyAdmin. |
+| Database tidak ditemukan | Pastikan database hosting (`main`) tersedia dan `DB_NAME` berisi nama database yang benar. |
 | Kolom `avatar_path`, `image_path`, atau `bmkg_adm4` tidak ditemukan | Jalankan migrasi sekali pada database lama; jangan pada database baru dari schema terbaru. |
 | PDO gagal tersambung | Pastikan MySQL Laragon aktif dan nilai `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` sesuai. |
 | PHP tidak dieksekusi | Jalankan melalui Apache Laragon atau `php -S 127.0.0.1:8000 -t .`, bukan Go Live. |
@@ -213,6 +213,8 @@ Koordinat lahan dikirim ke layanan geocoding/cuaca tersebut saat pengguna membuk
 
 ## 10. Catatan deployment
 
+- Atur `DB_HOST`, `DB_PORT`, `DB_NAME=main`, `DB_USER`, dan `DB_PASS` pada environment hosting. Jika database mewajibkan TLS, atur `DB_SSL=true` dan kredensial CA sesuai penyedia.
+- Impor `database/schema.sql` dengan database `main` terpilih sebelum menjalankan `database/seed.php`. Jangan jalankan seed sebelum tabel dibuat.
 - Gunakan akun database khusus aplikasi, bukan `root`, dan jangan commit kredensial.
 - Aktifkan HTTPS, atur cookie/session untuk domain deployment, dan batasi akses folder upload di web server.
 - Sediakan backup database dan berkas `uploads/`.
