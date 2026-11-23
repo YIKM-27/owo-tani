@@ -1,6 +1,6 @@
 # OwO Tani
 
-OwO Tani adalah aplikasi web pertanian untuk mengelola lahan, menjelajahi Niaga Tani, mencatat pesanan, dan melihat contoh harga komoditas.
+OwO Tani adalah aplikasi berbasis web pertanian untuk mengelola lahan, menjelajahi Niaga Tani, mencatat pesanan, dan melihat contoh harga komoditas pangan saat ini.
 
 > Panduan instalasi lengkap, struktur aplikasi, dan detail teknis ada di [DOKUMENTASI.md](./DOKUMENTASI.md).
 
