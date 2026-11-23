@@ -1,10 +1,10 @@
-# Dokumentasi OwO Tani
+# Dokumentasi PekaTani
 
-Dokumen ini menjelaskan persiapan, susunan proyek, fitur, dan alur teknis aplikasi OwO Tani. Untuk panduan penggunaan sehari-hari, lihat [README.md](./README.md).
+Dokumen ini menjelaskan persiapan, susunan proyek, fitur, dan alur teknis aplikasi PekaTani. Untuk panduan penggunaan sehari-hari, lihat [README.md](./README.md).
 
 ## 1. Gambaran proyek
 
-OwO Tani dibuat dengan PHP native, MySQL/MariaDB, HTML, CSS, dan JavaScript tanpa framework. Aplikasi berjalan di Laragon atau container PHP dan menggunakan session database untuk mendukung deployment serverless.
+PekaTani dibuat dengan PHP native, MySQL/MariaDB, HTML, CSS, dan JavaScript tanpa framework. Aplikasi berjalan di Laragon atau container PHP dan menggunakan session database untuk mendukung deployment serverless.
 
 ### Persyaratan
 
@@ -37,7 +37,7 @@ OwO Tani dibuat dengan PHP native, MySQL/MariaDB, HTML, CSS, dan JavaScript tanp
    php -S 127.0.0.1:8000 -t .
    ```
 
-7. Buka `http://127.0.0.1:8000`. Alternatifnya, tempatkan proyek di `C:\laragon\www\owo-tani` dan gunakan Apache Laragon.
+7. Buka `http://127.0.0.1:8000`. Alternatifnya, tempatkan proyek di `C:\laragon\www\pekatani` dan gunakan Apache Laragon.
 
 Live Server/Go Live hanya menyajikan berkas statis dan tidak cocok untuk menjalankan aplikasi PHP.
 
@@ -130,7 +130,7 @@ Grafik, harga, dan perubahan harga saat ini merupakan data ilustrasi dalam [`pri
 
 Fitur berikut mendukung tujuan pembangunan berkelanjutan dalam lingkup aplikasi. Ini bukan klaim bahwa aplikasi sendiri mencapai target SDG; data dan saran memiliki keterbatasan yang dijelaskan di bawah.
 
-| Tujuan SDG | Fitur OwO Tani | File terkait |
+| Tujuan SDG | Fitur PekaTani | File terkait |
 |---|---|---|
 | SDG 2 — Tanpa Kelaparan | Kategori hasil panen sortiran menghubungkan hasil yang masih layak konsumsi dengan pembeli dengan harga lebih terjangkau, untuk mengurangi pangan terbuang. | [`marketplace.php`](./marketplace.php), [`database/seed.php`](./database/seed.php), [`database/schema.sql`](./database/schema.sql) |
 | SDG 9 — Industri, Inovasi, dan Infrastruktur | Label asal produk, catatan informasi pengiriman pesanan, dan pemantauan komoditas membantu menata alur niaga digital. Harga pada halaman pasar masih ilustrasi dan belum memakai API Bapanas. | [`marketplace.php`](./marketplace.php), [`orders.php`](./orders.php), [`prices.php`](./prices.php) |
@@ -162,6 +162,7 @@ Foreign key digunakan untuk menjaga relasi pengguna, lahan, produk, dan pesanan.
 ├── database/
 │   ├── schema.sql            # Skema untuk instalasi baru
 │   ├── seed.php              # Akun dan produk demo
+│   ├── demo_data.sql         # Akun non-admin dan produk demo untuk cloud
 │   ├── demo_products.sql     # Produk demo untuk akun seller terpilih
 │   └── migrations/           # Migrasi bertanggal
 │       ├── 20261116_media_and_bmkg_locations.sql
@@ -219,6 +220,7 @@ Koordinat lahan dikirim ke layanan geocoding/cuaca tersebut saat pengguna membuk
 - Untuk database yang sudah berisi tabel, pilih database `main` lalu impor migrasi [`20261123_vercel_storage.sql`](./database/migrations/20261123_vercel_storage.sql). Sesi login dan gambar unggahan disimpan di database, bukan filesystem instance yang sementara.
 - Impor [`database/schema.sql`](./database/schema.sql) pada instalasi baru dengan database `main` terpilih. Tabel `app_sessions` dan `app_media` diperlukan untuk sesi login dan gambar unggahan.
 - Untuk menampilkan produk demo tanpa membuat akun demo ber-password bawaan, daftarkan akun seller di situs, ubah `YOUR_SELLER_EMAIL` pada [`demo_products.sql`](./database/demo_products.sql) ke email seller tersebut, lalu impor file itu saat database `main` dipilih.
+- Untuk demo sementara, sekaligus tambahkan akun demo non-admin dan 16 produk contoh dengan mengimpor [`demo_data.sql`](./database/demo_data.sql) ke `main`. Akun seller `taniniaga1@owotani.test` menjadi pemilik produk. Akun admin tidak disertakan; data yang sudah ada tidak dihapus atau kata sandinya tidak ditimpa. Kredensial demo diketahui publik, jadi jangan impor ke situs produksi.
 - `database/seed.php` hanya untuk CLI dan membuat akun demo dengan kata sandi contoh. Jangan jalankan pada situs publik.
 - Gunakan akun database khusus aplikasi, bukan `root`, dan jangan commit kredensial.
 - Aktifkan HTTPS dan sediakan backup database, termasuk tabel `app_media`.

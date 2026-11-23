@@ -13,7 +13,7 @@ require __DIR__ . '/includes/header.php';
     <div class="hero-photo" aria-hidden="true"></div>
     <div class="hero-content">
         <span class="eyebrow eyebrow-light"><span class="status-dot"></span> Ekosistem pertanian Indonesia</span>
-        <h1>Tumbuh lebih baik,<br><em>bersama</em> OwO Tani.</h1>
+        <h1>Tumbuh lebih baik,<br><em>bersama</em> PekaTani.</h1>
         <p>Satu ruang untuk merawat lahan, menemukan kebutuhan tani, dan membaca peluang pasar dengan lebih percaya diri.</p>
         <div class="hero-actions">
             <a class="button button-cream" href="register.php">Mulai perjalanan <span aria-hidden="true">↗</span></a>
@@ -32,7 +32,7 @@ require __DIR__ . '/includes/header.php';
     <div class="intro-grid">
         <h2>Teknologi yang dekat<br>dengan keseharian tani.</h2>
         <div>
-            <p class="lead-copy">OwO Tani membantu menghubungkan hal-hal penting dalam perjalanan pertanian—mulai dari catatan lahan, kebutuhan produksi, sampai informasi harga hasil panen.</p>
+            <p class="lead-copy">PekaTani membantu menghubungkan hal-hal penting dalam perjalanan pertanian—mulai dari catatan lahan, kebutuhan produksi, sampai informasi harga hasil panen.</p>
             <a class="text-link" href="register.php">Kenali ruang tumbuhmu <span aria-hidden="true">↗</span></a>
         </div>
     </div>
@@ -74,7 +74,7 @@ require __DIR__ . '/includes/header.php';
 <section class="feature-section content-section sdg-section" id="sdgs">
     <div class="section-heading">
         <div><div class="section-kicker">Dampak yang ingin didukung</div><h2>Selaras dengan SDGs.</h2></div>
-        <p>Fitur OwO Tani dirancang untuk membantu praktik pertanian dan niaga yang lebih tangguh, inklusif, dan bertanggung jawab.</p>
+        <p>Fitur PekaTani dirancang untuk membantu praktik pertanian dan niaga yang lebih tangguh, inklusif, dan bertanggung jawab.</p>
     </div>
     <div class="feature-grid">
         <article class="feature-card feature-card-market">
@@ -106,7 +106,7 @@ require __DIR__ . '/includes/header.php';
         <div class="section-kicker section-kicker-light">Ruang tumbuhmu menanti</div>
         <h2>Mulai dari satu langkah kecil hari ini.</h2>
         <p>Buat akun, pilih peranmu, dan temukan fitur yang paling sesuai dengan perjalanan tanimu.</p>
-        <a class="button button-cream" href="register.php">Gabung dengan OwO Tani <span aria-hidden="true">↗</span></a>
+        <a class="button button-cream" href="register.php">Gabung dengan PekaTani <span aria-hidden="true">↗</span></a>
     </div>
     <div class="join-decoration" aria-hidden="true"><span>o</span><span>t</span></div>
 </section>

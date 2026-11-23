@@ -7,7 +7,7 @@ if (PHP_SAPI !== 'cli') {
 
 $pdo = require __DIR__ . '/../config/database.php';
 $accounts = [
-    ['Admin OwO', 'admin@owotani.test', 'admin123', 'admin'],
+    ['Admin PekaTani', 'admin@owotani.test', 'admin123', 'admin'],
     ['Petani Satu', 'petani1@owotani.test', 'Petani01', 'petani'],
     ['Petani Dua', 'petani2@owotani.test', 'Petani02', 'petani'],
     ['Penjual Satu', 'penjual1@owotani.test', 'Penjual01', 'penjual'],

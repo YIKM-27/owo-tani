@@ -1,6 +1,6 @@
-# OwO Tani
+# PekaTani
 
-OwO Tani adalah aplikasi berbasis web pertanian untuk mengelola lahan, menjelajahi Niaga Tani, mencatat pesanan, dan melihat contoh harga komoditas pangan saat ini.
+PekaTani adalah aplikasi berbasis web pertanian untuk mengelola lahan, menjelajahi Niaga Tani, mencatat pesanan, dan melihat contoh harga komoditas pangan saat ini.
 
 > Panduan instalasi lengkap, struktur aplikasi, dan detail teknis ada di [DOKUMENTASI.md](./DOKUMENTASI.md).
 
@@ -35,6 +35,8 @@ Gunakan Apache Laragon atau PHP server di atas, bukan tombol **Go Live / Live Se
 
 Akun kedua untuk setiap peran juga tersedia; daftar lengkapnya ada di [DOKUMENTASI.md](./DOKUMENTASI.md). Akun demo hanya untuk penggunaan lokal dan kata sandinya harus diganti sebelum aplikasi dipublikasikan.
 
+Untuk demo sementara, isi database cloud dengan akun non-admin dan 16 produk contoh: pilih database `main` di SQL Editor lalu jalankan [`database/demo_data.sql`](./database/demo_data.sql). Akun demo memakai kata sandi di tabel di atas dan dapat digunakan siapa pun yang mengakses situs; jangan impor ke situs produksi. Impor ini tidak membuat akun admin.
+
 ## Cara memakai
 
 1. **Buat akun atau masuk.** Saat mendaftar, pilih peran yang sesuai. Peran dapat diubah kemudian melalui **Profil**.
@@ -67,7 +69,7 @@ Akun kedua untuk setiap peran juga tersedia; daftar lengkapnya ada di [DOKUMENTA
 
 ## Kontribusi terhadap SDGs
 
-| Tujuan SDG | Fitur OwO Tani | File terkait |
+| Tujuan SDG | Fitur PekaTani | File terkait |
 |---|---|---|
 | SDG 2 — Tanpa Kelaparan | Hasil panen sortiran yang layak konsumsi dipasarkan dengan harga lebih terjangkau untuk mengurangi pangan terbuang. | [`marketplace.php`](./marketplace.php), [`database/seed.php`](./database/seed.php) |
 | SDG 9 — Industri, Inovasi, dan Infrastruktur | Informasi asal produk, catatan logistik pesanan, serta halaman pemantauan harga mendukung alur niaga digital; data harga masih ilustrasi. | [`marketplace.php`](./marketplace.php), [`orders.php`](./orders.php), [`prices.php`](./prices.php) |

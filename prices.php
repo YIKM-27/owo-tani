@@ -76,7 +76,7 @@ require __DIR__ . '/includes/header.php';
                 <div class="chart-legend"><span>PERIODE SIMULASI</span><span data-chart-period>Intrahari · data ilustrasi</span><span>SUMBER HARGA <strong>Belum terhubung</strong></span></div>
             </div>
         </div>
-        <div class="terminal-bottom"><span>OwO Tani · Commodity Watch</span><span>Angka pada halaman ini adalah data dummy dan tidak diperbarui dari pasar.</span></div>
+        <div class="terminal-bottom"><span>PekaTani · Commodity Watch</span><span>Angka pada halaman ini adalah data dummy dan tidak diperbarui dari pasar.</span></div>
     </section>
 
     <section class="market-summary-section">

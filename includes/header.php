@@ -1,5 +1,5 @@
 <?php
-$pageTitle = $pageTitle ?? 'OwO Tani';
+$pageTitle = $pageTitle ?? 'PekaTani';
 $activePage = $activePage ?? '';
 $loggedInUser = current_user();
 $flashMessage = take_flash();
@@ -10,7 +10,7 @@ $flashMessage = take_flash();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#183c32">
-    <title><?= e($pageTitle) ?> · OwO Tani</title>
+    <title><?= e($pageTitle) ?> · PekaTani</title>
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,9 +20,9 @@ $flashMessage = take_flash();
 </head>
 <body>
 <header class="site-header">
-    <a class="brand" href="<?= $loggedInUser ? 'dashboard.php' : 'index.php' ?>" aria-label="OwO Tani, beranda">
-        <span class="brand-mark" aria-hidden="true">o</span>
-        <span>OwO <strong>Tani</strong></span>
+    <a class="brand" href="<?= $loggedInUser ? 'dashboard.php' : 'index.php' ?>" aria-label="PekaTani, beranda">
+        <span class="brand-mark" aria-hidden="true">p</span>
+        <span>Peka<strong>Tani</strong></span>
     </a>
     <button class="nav-toggle" type="button" aria-label="Buka navigasi" aria-expanded="false" data-nav-toggle>
         <span></span><span></span><span></span>

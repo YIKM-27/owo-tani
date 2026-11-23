@@ -52,7 +52,7 @@ require __DIR__ . '/includes/header.php';
             <div class="section-kicker"><?= $isAdmin ? 'Ruang pengelola' : 'Ruang tumbuhmu' ?></div>
             <h1>Halo, <?= e($account['name']) ?><span class="greeting-dot">.</span></h1>
             <p class="welcome-role"><?= e(role_label($account['role'])) ?></p>
-            <p class="welcome-message"><?= $isAdmin ? 'Pantau aktivitas OwO Tani dan jaga ruang ini tetap nyaman untuk semua.' : e($roleMessages[$account['role']] ?? 'Selamat datang di OwO Tani.') ?></p>
+            <p class="welcome-message"><?= $isAdmin ? 'Pantau aktivitas PekaTani dan jaga ruang ini tetap nyaman untuk semua.' : e($roleMessages[$account['role']] ?? 'Selamat datang di PekaTani.') ?></p>
         </div>
         <div class="welcome-orbit" aria-hidden="true"><span>o</span><span>t</span><i></i></div>
     </div>

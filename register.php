@@ -30,22 +30,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirmation) {
         $error = 'Konfirmasi kata sandi belum sama.';
     } else {
-        $check = db()->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
-        $check->execute([$email]);
-        if ($check->fetch()) {
-            $error = 'Email tersebut sudah terdaftar. Silakan masuk atau gunakan email lain.';
-        } else {
-            $insert = db()->prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)');
-            $insert->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT), $role]);
-            session_regenerate_id(true);
-            $_SESSION['user'] = [
-                'id' => (int) db()->lastInsertId(),
-                'name' => $name,
-                'email' => $email,
-                'role' => $role,
-            ];
-            set_flash('success', 'Akunmu sudah siap. Selamat datang di OwO Tani!');
-            redirect('dashboard.php');
+        try {
+            $check = db()->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
+            $check->execute([$email]);
+            if ($check->fetch()) {
+                $error = 'Email tersebut sudah terdaftar. Silakan masuk atau gunakan email lain.';
+            } else {
+                $insert = db()->prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)');
+                $insert->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT), $role]);
+                session_regenerate_id(true);
+                $_SESSION['user'] = [
+                    'id' => (int) db()->lastInsertId(),
+                    'name' => $name,
+                    'email' => $email,
+                    'role' => $role,
+                ];
+                set_flash('success', 'Akunmu sudah siap. Selamat datang di PekaTani!');
+                redirect('dashboard.php');
+            }
+        } catch (PDOException $exception) {
+            error_log('PekaTani registration database error: ' . $exception->getCode());
+            if ((string) $exception->getCode() === '23000') {
+                $error = 'Email tersebut sudah terdaftar. Silakan masuk atau gunakan email lain.';
+            } else {
+                $error = 'Akun belum berhasil dibuat karena ada kendala database. Coba lagi nanti.';
+            }
         }
     }
 }
@@ -93,7 +102,7 @@ require __DIR__ . '/includes/header.php';
                         <input type="password" name="password_confirmation" autocomplete="new-password" placeholder="Ketik ulang" required minlength="8">
                     </label>
                 </div>
-                <button class="button button-primary button-wide" type="submit">Buat akun OwO Tani <span aria-hidden="true">↗</span></button>
+                <button class="button button-primary button-wide" type="submit">Buat akun PekaTani <span aria-hidden="true">↗</span></button>
             </form>
             <p class="auth-switch">Sudah punya akun? <a href="login.php">Masuk di sini</a></p>
         </div>

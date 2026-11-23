@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $error = 'Email atau kata sandi belum sesuai. Periksa kembali, ya.';
     } catch (PDOException) {
-        error_log('OwO Tani login database error');
+        error_log('PekaTani login database error');
         $error = 'Layanan database belum dapat dihubungi. Silakan coba beberapa saat lagi.';
     }
 }
@@ -52,7 +52,7 @@ require __DIR__ . '/includes/header.php';
     </div>
     <div class="auth-panel">
         <div class="auth-form-wrap">
-            <div class="section-kicker">Akun OwO Tani</div>
+            <div class="section-kicker">Akun PekaTani</div>
             <h2>Selamat datang.</h2>
             <p class="muted-copy">Masuk untuk melanjutkan perjalanan tanimu.</p>
             <?php if ($error): ?><div class="form-alert" role="alert"><?= e($error) ?></div><?php endif; ?>

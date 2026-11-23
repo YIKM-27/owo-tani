@@ -2,7 +2,7 @@ SET @demo_seller_email = 'YOUR_SELLER_EMAIL';
 SET @demo_seller_id = (
     SELECT id
     FROM users
-    WHERE email = @demo_seller_email
+    WHERE BINARY email = BINARY @demo_seller_email
       AND role IN ('penjual', 'petani_penjual')
     LIMIT 1
 );
@@ -71,5 +71,5 @@ WHERE @demo_seller_id IS NOT NULL
       SELECT 1
       FROM products existing
       WHERE existing.seller_id = @demo_seller_id
-        AND existing.name = sample.name
+        AND BINARY existing.name = BINARY sample.name
   );
