@@ -4,14 +4,14 @@ Dokumen ini menjelaskan persiapan, susunan proyek, fitur, dan alur teknis aplika
 
 ## 1. Gambaran proyek
 
-OwO Tani dibuat dengan PHP native, MySQL/MariaDB, HTML, CSS, dan JavaScript tanpa framework. Aplikasi berjalan di Laragon dan menggunakan session PHP untuk autentikasi.
+OwO Tani dibuat dengan PHP native, MySQL/MariaDB, HTML, CSS, dan JavaScript tanpa framework. Aplikasi berjalan di Laragon atau container PHP dan menggunakan session database untuk mendukung deployment serverless.
 
 ### Persyaratan
 
 - Laragon dengan PHP 8.1 atau lebih baru dan MySQL/MariaDB.
 - Ekstensi PHP: PDO MySQL, cURL, mbstring, dan GD.
 - Koneksi internet untuk layanan cuaca, geocoding, font, dan sebagian foto contoh.
-- Folder proyek dapat ditulis PHP pada direktori `uploads/`.
+- Database harus mengizinkan tabel sesi dan penyimpanan media aplikasi.
 
 ## 2. Instalasi dan konfigurasi
 
@@ -47,6 +47,7 @@ Database lama perlu diperbarui dengan migrasi yang belum diterapkan. Buat cadang
 
 1. [`database/migrations/20261116_media_and_bmkg_locations.sql`](./database/migrations/20261116_media_and_bmkg_locations.sql) untuk database sebelum fitur foto dan integrasi ADM4.
 2. [`database/migrations/20261122_sdg_features.sql`](./database/migrations/20261122_sdg_features.sql) untuk aktivitas jurnal baru, kategori hasil panen sortiran, asal produk, dan catatan pengiriman.
+3. [`database/migrations/20261123_vercel_storage.sql`](./database/migrations/20261123_vercel_storage.sql) untuk session dan gambar yang disimpan lintas instance.
 
 Lewati migrasi yang sudah pernah diterapkan. Jangan jalankan migrasi pada database baru dari `schema.sql` terbaru karena perubahan tersebut sudah tercakup.
 
@@ -100,10 +101,9 @@ Peran pengguna dapat diubah melalui halaman Profil. Daftar akses ditegakkan di s
 
 - Formulir menerima JPEG/JPG, PNG, dan WebP, maksimal 5 MB per file.
 - PHP memvalidasi isi sebagai gambar, membatasi resolusi, mengubah ukuran gambar besar, dan menyimpan ulang sebagai JPEG.
-- Nama berkas acak dan disimpan di `uploads/profiles/` atau `uploads/products/`.
-- Database menyimpan path relatif, bukan data gambar BLOB.
-- `.htaccess` pada `uploads/` menonaktifkan daftar direktori dan akses ke berkas PHP. Untuk server selain Apache, terapkan pembatasan yang setara.
-- Folder `uploads/` harus dapat ditulis oleh proses PHP. Atur `upload_max_filesize` dan `post_max_size` PHP jika deployment memerlukan ukuran unggahan berbeda.
+- Gambar disimpan sebagai BLOB pada `app_media`; kolom profil/produk menyimpan URL `media.php` yang memakai ID acak.
+- Penyimpanan database dipakai agar foto tetap tersedia pada container Vercel yang filesystem-nya hanya sementara dan read-only.
+- Atur `upload_max_filesize` dan `post_max_size` PHP jika deployment memerlukan ukuran unggahan berbeda.
 - Foto Unsplash merupakan gambar fallback untuk produk yang belum memiliki foto unggahan.
 
 ### Lahanku dan cuaca BMKG
@@ -162,9 +162,11 @@ Foreign key digunakan untuk menjaga relasi pengguna, lahan, produk, dan pesanan.
 ├── database/
 │   ├── schema.sql            # Skema untuk instalasi baru
 │   ├── seed.php              # Akun dan produk demo
+│   ├── demo_products.sql     # Produk demo untuk akun seller terpilih
 │   └── migrations/           # Migrasi bertanggal
 │       ├── 20261116_media_and_bmkg_locations.sql
-│       └── 20261122_sdg_features.sql
+│       ├── 20261122_sdg_features.sql
+│       └── 20261123_vercel_storage.sql
 ├── includes/
 │   ├── bootstrap.php         # Session, helper, akses, CSRF, unggah gambar
 │   ├── header.php            # Header dan navigasi
@@ -172,8 +174,8 @@ Foreign key digunakan untuk menjaga relasi pengguna, lahan, produk, dan pesanan.
 │   └── location.php          # Geocoding, pencocokan ADM4, klien BMKG
 ├── uploads/
 │   ├── .htaccess
-│   ├── products/             # Foto produk yang diunggah
-│   └── profiles/             # Foto profil yang diunggah
+│   ├── products/             # Lokasi lama untuk foto produk
+│   └── profiles/             # Lokasi lama untuk foto profil
 ├── dashboard.php
 ├── land.php
 ├── marketplace.php
@@ -187,7 +189,7 @@ Foreign key digunakan untuk menjaga relasi pengguna, lahan, produk, dan pesanan.
 └── logout.php
 ```
 
-Folder `uploads/products/` dan `uploads/profiles/` dibuat otomatis ketika PHP pertama kali menyimpan foto.
+Foto baru tidak memerlukan folder `uploads/`; foto lama dengan path `uploads/` tetap didukung.
 
 ## 8. Sumber eksternal dan privasi
 
@@ -205,17 +207,19 @@ Koordinat lahan dikirim ke layanan geocoding/cuaca tersebut saat pengguna membuk
 |---|---|
 | Database tidak ditemukan | Pastikan database hosting (`main`) tersedia dan `DB_NAME` berisi nama database yang benar. |
 | Kolom `avatar_path`, `image_path`, atau `bmkg_adm4` tidak ditemukan | Jalankan migrasi sekali pada database lama; jangan pada database baru dari schema terbaru. |
-| PDO gagal tersambung | Pastikan MySQL Laragon aktif dan nilai `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` sesuai. |
+| PDO gagal tersambung | Pastikan nilai `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` sesuai dan TLS diaktifkan bila database mewajibkannya. |
 | PHP tidak dieksekusi | Jalankan melalui Apache Laragon atau `php -S 127.0.0.1:8000 -t .`, bukan Go Live. |
-| Upload gagal | Aktifkan GD, periksa izin tulis `uploads/`, batas PHP, dan format/ukuran file. |
+| Upload gagal | Aktifkan GD, pastikan tabel `app_media` tersedia, dan periksa batas PHP serta format/ukuran file. |
 | Cuaca BMKG tidak tersedia | Pastikan cURL dan internet aktif; periksa alamat/kode ADM4. Open-Meteo digunakan jika tersedia. |
 | Foto fallback tidak terlihat | Periksa koneksi internet ke Unsplash atau unggah foto sendiri. |
 
 ## 10. Catatan deployment
 
-- Atur `DB_HOST`, `DB_PORT`, `DB_NAME=main`, `DB_USER`, dan `DB_PASS` pada environment hosting. Jika database mewajibkan TLS, atur `DB_SSL=true` dan kredensial CA sesuai penyedia.
-- Impor `database/schema.sql` dengan database `main` terpilih sebelum menjalankan `database/seed.php`. Jangan jalankan seed sebelum tabel dibuat.
+- Atur `DB_HOST`, `DB_PORT`, `DB_NAME=main`, `DB_USER`, dan `DB_PASS` pada environment hosting. TLS otomatis aktif untuk host database non-lokal; `DB_SSL` dapat mengubahnya secara eksplisit, dan `DB_SSL_CA` menerima path CA khusus bila diperlukan.
+- Untuk database yang sudah berisi tabel, pilih database `main` lalu impor migrasi [`20261123_vercel_storage.sql`](./database/migrations/20261123_vercel_storage.sql). Sesi login dan gambar unggahan disimpan di database, bukan filesystem instance yang sementara.
+- Impor [`database/schema.sql`](./database/schema.sql) pada instalasi baru dengan database `main` terpilih. Tabel `app_sessions` dan `app_media` diperlukan untuk sesi login dan gambar unggahan.
+- Untuk menampilkan produk demo tanpa membuat akun demo ber-password bawaan, daftarkan akun seller di situs, ubah `YOUR_SELLER_EMAIL` pada [`demo_products.sql`](./database/demo_products.sql) ke email seller tersebut, lalu impor file itu saat database `main` dipilih.
+- `database/seed.php` hanya untuk CLI dan membuat akun demo dengan kata sandi contoh. Jangan jalankan pada situs publik.
 - Gunakan akun database khusus aplikasi, bukan `root`, dan jangan commit kredensial.
-- Aktifkan HTTPS, atur cookie/session untuk domain deployment, dan batasi akses folder upload di web server.
-- Sediakan backup database dan berkas `uploads/`.
+- Aktifkan HTTPS dan sediakan backup database, termasuk tabel `app_media`.
 - Periksa batas dan kebijakan layanan eksternal, atribusi, privasi koordinat, serta sumber resmi harga/cuaca sebelum penggunaan produksi.

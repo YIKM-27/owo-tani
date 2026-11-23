@@ -10,7 +10,7 @@ OwO Tani adalah aplikasi berbasis web pertanian untuk mengelola lahan, menjelaja
 
 1. Jalankan Apache dan MySQL dari Laragon.
 2. Buat database MySQL `owo_tani`, lalu impor [`database/schema.sql`](./database/schema.sql) lewat HeidiSQL atau phpMyAdmin. Jangan ketik SQL langsung di Command Prompt.
-3. Untuk database lama, jalankan migrasi secara berurutan: [`20261116_media_and_bmkg_locations.sql`](./database/migrations/20261116_media_and_bmkg_locations.sql), lalu [`20261122_sdg_features.sql`](./database/migrations/20261122_sdg_features.sql). Lewati migrasi yang kolomnya sudah ada; instalasi baru dari schema terbaru tidak memerlukan migrasi.
+3. Untuk database lama, jalankan migrasi yang belum diterapkan di folder `database/migrations/`. Instalasi baru dari schema terbaru tidak memerlukan migrasi.
 4. Dari PowerShell pada folder proyek, atur nama database lokal lalu jalankan:
 
    ```text
@@ -46,7 +46,7 @@ Akun kedua untuk setiap peran juga tersedia; daftar lengkapnya ada di [DOKUMENTA
    - **Pesanan:** pembeli memantau belanja; penjual mengubah status pesanan yang masuk.
    - **Profil:** ubah nama, peran, dan foto profil.
 3. **Untuk melihat cuaca lahan,** buka **Lahanku → Lihat prakiraan cuaca**. Alamat dan kode ADM4 dicari otomatis dari koordinat; kode tidak perlu dicari atau diketik sendiri.
-4. **Untuk memasang foto,** pilih JPG, PNG, atau WebP hingga 5 MB pada formulir produk atau profil. Pastikan folder `uploads/` bisa ditulis oleh PHP.
+4. **Untuk memasang foto,** pilih JPG, PNG, atau WebP hingga 5 MB pada formulir produk atau profil. Gambar disimpan di database agar tetap tersedia setelah deployment baru.
 
 ## Akses berdasarkan peran
 
@@ -63,7 +63,7 @@ Akun kedua untuk setiap peran juga tersedia; daftar lengkapnya ada di [DOKUMENTA
 - Harga dan grafik di **Harga Pasar adalah ilustrasi/demo**, bukan data harga aktual atau real-time. Gunakan Panel Harga Pangan Bapanas untuk memeriksa informasi resmi.
 - Prakiraan cuaca menggunakan BMKG setelah koordinat dicocokkan dengan wilayah administrasi desa/kelurahan. Jika pencocokan atau layanan BMKG gagal, aplikasi mencoba Open-Meteo sebagai cadangan.
 - Saran cuaca bersifat umum dan bukan pengganti penyuluh pertanian.
-- Foto produk contoh dari internet memerlukan koneksi; foto yang diunggah pengguna disimpan di folder lokal `uploads/`.
+- Foto produk contoh dari internet memerlukan koneksi; foto yang diunggah pengguna disimpan di tabel `app_media`.
 
 ## Kontribusi terhadap SDGs
 
@@ -77,7 +77,7 @@ Akun kedua untuk setiap peran juga tersedia; daftar lengkapnya ada di [DOKUMENTA
 
 - **Database tidak ditemukan:** untuk Laragon, pastikan `owo_tani` sudah dibuat, `DB_NAME` diatur ke `owo_tani`, dan [`database/schema.sql`](./database/schema.sql) berhasil diimpor. Hosting memakai `main` secara bawaan; atur `DB_NAME` jika nama databasenya berbeda.
 - **Kolom database tidak ditemukan:** jika memakai database lama, jalankan migrasi satu kali seperti dijelaskan di atas.
-- **Foto tidak bisa diunggah:** aktifkan ekstensi GD PHP dan pastikan `uploads/` memiliki izin tulis.
+- **Foto tidak bisa diunggah:** aktifkan ekstensi GD PHP dan pastikan tabel `app_media` sudah dibuat dari schema atau migrasi terbaru.
 - **Halaman cuaca tidak menampilkan BMKG:** periksa koneksi internet dan cURL PHP. Aplikasi dapat beralih ke Open-Meteo jika tersedia.
 
 cd "C:\Users\vestia\Documents\Belajar_HTML\PEMOGRAMAN WEEEB I"

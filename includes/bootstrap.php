@@ -2,14 +2,6 @@
 
 declare(strict_types=1);
 
-$isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-session_set_cookie_params([
-    'httponly' => true,
-    'secure' => $isHttps,
-    'samesite' => 'Lax',
-]);
-session_start();
-
 function db(): PDO
 {
     static $connection;
@@ -18,6 +10,67 @@ function db(): PDO
     }
     return $connection;
 }
+
+final class DatabaseSessionHandler implements SessionHandlerInterface
+{
+    public function __construct(private PDO $connection)
+    {
+    }
+
+    public function open(string $path, string $name): bool
+    {
+        return true;
+    }
+
+    public function close(): bool
+    {
+        return true;
+    }
+
+    public function read(string $id): string|false
+    {
+        $statement = $this->connection->prepare(
+            'SELECT session_data FROM app_sessions WHERE session_id = ? AND last_activity >= ?'
+        );
+        $statement->execute([$id, time() - (int) ini_get('session.gc_maxlifetime')]);
+        $data = $statement->fetchColumn();
+        return $data === false ? '' : (string) $data;
+    }
+
+    public function write(string $id, string $data): bool
+    {
+        $statement = $this->connection->prepare(
+            'INSERT INTO app_sessions (session_id, session_data, last_activity) VALUES (?, ?, ?)
+             ON DUPLICATE KEY UPDATE session_data = VALUES(session_data), last_activity = VALUES(last_activity)'
+        );
+        return $statement->execute([$id, $data, time()]);
+    }
+
+    public function destroy(string $id): bool
+    {
+        $statement = $this->connection->prepare('DELETE FROM app_sessions WHERE session_id = ?');
+        return $statement->execute([$id]);
+    }
+
+    public function gc(int $max_lifetime): int|false
+    {
+        $statement = $this->connection->prepare('DELETE FROM app_sessions WHERE last_activity < ?');
+        $statement->execute([time() - $max_lifetime]);
+        return $statement->rowCount();
+    }
+}
+
+$forwardedProto = strtolower(trim(explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''))[0]));
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $forwardedProto === 'https';
+session_set_save_handler(new DatabaseSessionHandler(db()), true);
+session_set_cookie_params([
+    'path' => '/',
+    'httponly' => true,
+    'secure' => $isHttps,
+    'samesite' => 'Lax',
+]);
+session_start();
+header('Cache-Control: no-store, private');
 
 function e(mixed $value): string
 {
@@ -192,28 +245,29 @@ function save_uploaded_image(string $field, string $kind, int $maxBytes = 524288
     imagecopyresampled($image, $source, 0, 0, 0, 0, $outputWidth, $outputHeight, $width, $height);
     imagedestroy($source);
 
-    $directory = dirname(__DIR__) . '/uploads/' . $kind;
-    if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
-        imagedestroy($image);
-        throw new RuntimeException('Folder penyimpanan gambar tidak dapat dibuat.');
-    }
-
-    $filename = bin2hex(random_bytes(16)) . '.jpg';
-    $absolutePath = $directory . '/' . $filename;
-    $saved = imagejpeg($image, $absolutePath, 86);
+    ob_start();
+    $saved = imagejpeg($image, null, 86);
+    $imageData = ob_get_clean();
     imagedestroy($image);
-    if (!$saved) {
-        if (is_file($absolutePath) && !unlink($absolutePath)) {
-            throw new RuntimeException('Gambar gagal disimpan dan file sementara tidak dapat dibersihkan.');
-        }
-        throw new RuntimeException('Gambar gagal disimpan. Periksa izin folder uploads.');
+    if (!$saved || !is_string($imageData) || $imageData === '') {
+        throw new RuntimeException('Gambar gagal diproses.');
     }
 
-    return 'uploads/' . $kind . '/' . $filename;
+    $id = bin2hex(random_bytes(16));
+    $statement = db()->prepare('INSERT INTO app_media (id, image_data) VALUES (?, ?)');
+    $statement->bindValue(1, $id);
+    $statement->bindValue(2, $imageData, PDO::PARAM_LOB);
+    $statement->execute();
+
+    return 'media.php?id=' . $id;
 }
 
 function delete_uploaded_image(?string $relativePath): void
 {
+    if ($relativePath && preg_match('~\Amedia\.php\?id=([a-f0-9]{32})\z~', $relativePath, $matches)) {
+        db()->prepare('DELETE FROM app_media WHERE id = ?')->execute([$matches[1]]);
+        return;
+    }
     if (!$relativePath || !preg_match('~\Auploads/(?:products|profiles)/[a-f0-9]{32}\.jpg\z~', $relativePath)) {
         return;
     }
