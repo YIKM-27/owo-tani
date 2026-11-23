@@ -38,9 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $insert = db()->prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)');
                 $insert->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT), $role]);
+                $userId = (int) db()->lastInsertId();
                 session_regenerate_id(true);
                 $_SESSION['user'] = [
-                    'id' => (int) db()->lastInsertId(),
+                    'id' => $userId,
                     'name' => $name,
                     'email' => $email,
                     'role' => $role,

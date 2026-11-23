@@ -90,10 +90,24 @@ function current_user(): ?array
 
 function require_login(): void
 {
-    if (current_user() === null) {
+    $account = current_user();
+    $userId = filter_var($account['id'] ?? null, FILTER_VALIDATE_INT);
+    if ($account === null || $userId === false || $userId < 1) {
         set_flash('error', 'Silakan masuk terlebih dahulu untuk melanjutkan.');
         redirect('login.php');
     }
+
+    $statement = db()->prepare('SELECT id, name, email, role, avatar_path FROM users WHERE id = ? LIMIT 1');
+    $statement->execute([$userId]);
+    $storedAccount = $statement->fetch();
+    if (!$storedAccount) {
+        unset($_SESSION['user']);
+        session_regenerate_id(true);
+        set_flash('error', 'Sesi akun sudah tidak valid. Silakan masuk kembali.');
+        redirect('login.php');
+    }
+
+    $_SESSION['user'] = $storedAccount;
 }
 
 function can_access(string $feature): bool
